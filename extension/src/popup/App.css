@@ -1,0 +1,43 @@
+.container {
+  width: 260px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+h2 {
+  font-size: 22px;
+  margin: 0 0 8px;
+}
+
+h2 span {
+  color: #7c3aed;
+}
+
+p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 18px;
+}
+
+button {
+  width: 100%;
+
+  padding: 11px 16px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #5b4cf5;
+  color: white;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+button:hover {
+  background: #7c3aed;
+}
