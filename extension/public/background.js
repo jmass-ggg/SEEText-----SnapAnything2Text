@@ -12,14 +12,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         error: error.message,
       });
     });
+    return true;
 });
 async function captureScreenshot(sender) {
   const windowId = sender.tab?.windowId;
   if (windowId === undefined) {
-    throw new error("Could now find browser window");
+    throw new Error("Could now find browser window");
   }
-  const screenshot = await chrome.tab.captureVisibleTab(windowId, {
-    format: ".png",
+  const screenshot = await chrome.tabs.captureVisibleTab(windowId, {
+    format: "png",
   });
   return {
     success: true,
