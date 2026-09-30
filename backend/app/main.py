@@ -1,6 +1,6 @@
 from fastapi import FastAPI,UploadFile,File
 from fastapi.middleware.cors import CORSMiddleware
-
+from backend.app.ocr.service import extract_text
 app=FastAPI()
 
 app.add_middleware(
@@ -14,8 +14,9 @@ async def extract_image(
     image:UploadFile=File(...)
 ):
     data=await image.read()
+    text=extract_text(data)
     return {
         "filename": image.filename,
         "size": len(data),
-        "message": "Image received successfully"
+        "image text":text
     }
