@@ -14,9 +14,11 @@ async def extract_image(
     image:UploadFile=File(...)
 ):
     data=await image.read()
-    text=extract_text(data)
+    result=extract_text(data)
     return {
         "filename": image.filename,
         "size": len(data),
-        "image text":text
+        "image text":result["text"],
+        "tokens":result["token"],
+        
     }
