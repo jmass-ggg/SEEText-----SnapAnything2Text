@@ -18,13 +18,12 @@ async def extract_image(
     result=extract_text(data)
     structured_text = (
         reconstruct_layout(
-            result["tokens"]
+            result["token"]
         )
     )
     return {
         "filename": image.filename,
         "size": len(data),
-        "image text":result["text"],
+        "result":result["text"],
         "tokens":result["token"],
-        
     }

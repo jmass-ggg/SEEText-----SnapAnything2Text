@@ -147,7 +147,7 @@
 
      
 
-      showPreview(croppedImage);
+      
 
       const uploaded = await chrome.runtime.sendMessage({
         type: "UPLOAD_IMAGE",
@@ -157,10 +157,11 @@
       if (!uploaded?.success) {
         throw new Error(uploaded?.error || "Upload failed");
       }
-
+      const extractedText=uploaded.result.text;
+      showPreview(croppedImage,extractedText);
       console.log("Backend result", uploaded.result);
     } catch (error) {
-      console.error("Capture failed", error);
+      console.log("Capture failed", error);
     }
   }
 
@@ -281,7 +282,7 @@
   }
 
   // Creates and displays a preview panel containing the cropped screenshot.
-  function showPreview(imageUrl) {
+  function showPreview(imageUrl,extractedText) {
     const old = document.getElementById("codecapture-preview");
 
     if (old) {
@@ -293,93 +294,246 @@
     panel.id = "codecapture-preview";
 
     Object.assign(panel.style, {
-      position: "fixed",
+    position: "fixed",
 
-      top: "20px",
+    top: "24px",
+    right: "24px",
 
-      right: "20px",
+    width: "420px",
 
-      width: "360px",
+    padding: "18px",
 
-      padding: "14px",
+    background:
+      "rgba(15, 23, 42, 0.88)",
 
-      background: "#0f172a",
+    backdropFilter:
+      "blur(16px)",
 
-      color: "white",
+    WebkitBackdropFilter:
+      "blur(16px)",
 
-      borderRadius: "10px",
+    border:
+      "1px solid rgba(255,255,255,0.12)",
 
-      boxShadow: "0 15px 40px rgba(0,0,0,.5)",
+    borderRadius: "14px",
 
-      zIndex: "2147483647",
+    boxShadow:
+      "0 20px 60px rgba(0,0,0,0.45)",
 
-      fontFamily: "Arial, sans-serif",
-    });
+    color: "#f8fafc",
 
-    const title = document.createElement("div");
+    zIndex: "2147483647",
 
-    title.textContent = "CodeCapture Preview";
+    fontFamily:
+      "Inter, Arial, sans-serif"
+  });
+  const header=document.createElement("div");
+  Object.assign(header.style,{
+    display:"flex",
+    alignItems: "center",
+    justifyContent: "space-between",
 
-    title.style.fontWeight = "bold";
+    marginBottom: "14px"
+  })
+  const title=document.createElement("div");
+  title.textContent =
+    "CodeCapture Preview";
 
-    title.style.marginBottom = "10px";
+  Object.assign(title.style, {
+    fontSize: "16px",
+    fontWeight: "600"
+  });
+    const actions =
+    document.createElement("div");
 
-    const image = document.createElement("img");
+  Object.assign(actions.style, {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px"
+  });
+  const copyButton=document.createElement("button");
+  copyButton.textContent="Copy";
+  Object.assign(copyButton.style, {
+    padding: "7px 12px",
 
-    image.src = imageUrl;
+    border: "1px solid rgba(255,255,255,0.12)",
 
-    Object.assign(image.style, {
-      width: "100%",
+    borderRadius: "7px",
 
-      maxHeight: "300px",
+    background:
+      "rgba(124,58,237,0.20)",
 
-      objectFit: "contain",
+    color: "#ddd6fe",
 
-      borderRadius: "6px",
+    fontSize: "12px",
+    fontWeight: "600",
 
-      background: "white",
-    });
+    cursor: "pointer"
+  });
 
-    const buttons = document.createElement("div");
+  const closeBtn=document.createElement("button");
+  closeBtn.textContent="X";
+  Object.assign(closeBtn.style,{
+    width: "30px",
+    height: "30px",
 
-    buttons.style.display = "flex";
+    border: "none",
 
-    buttons.style.gap = "8px";
+    borderRadius: "7px",
 
-    buttons.style.marginTop = "10px";
+    background:
+      "rgba(255,255,255,0.06)",
 
-    const download = document.createElement("button");
+    color: "#cbd5e1",
 
-    download.textContent = "Save Image";
+    fontSize: "20px",
 
-    const close = document.createElement("button");
+    cursor: "pointer"
+  });
+  actions.append(copyButton,closeBtn);
+  header.append(title,actions);
+  const imageContainer=document.createElement("div");
+  Object.assign(imageContainer.style, {
+    width: "100%",
 
-    close.textContent = "Close";
+    maxHeight: "180px",
 
-    styleButton(download);
+    background:
+      "rgba(2, 6, 23, 0.65)",
 
-    styleButton(close);
+    border:
+      "1px solid rgba(255,255,255,0.08)",
 
-    download.onclick = () => {
-      const link = document.createElement("a");
+    borderRadius: "10px",
 
-      link.href = imageUrl;
+    overflow: "hidden",
 
-      link.download = "capture.png";
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
 
-      link.click();
-    };
+    marginBottom: "16px"
+  });
 
-    close.onclick = () => {
-      panel.remove();
-    };
 
-    buttons.append(download, close);
+  // CAPTURED IMAGE
+  const image =
+    document.createElement("img");
 
-    panel.append(title, image, buttons);
+  image.src = imageUrl;
 
-    document.documentElement.appendChild(panel);
+
+  Object.assign(image.style, {
+    width: "100%",
+
+    maxHeight: "180px",
+
+    objectFit: "contain",
+
+    display: "block"
+  });
+  imageContainer.appendChild(
+    image
+  );
+  const textLabel =
+    document.createElement("div");
+
+  textLabel.textContent =
+    "Extracted Text";
+     Object.assign(textLabel.style, {
+    fontSize: "13px",
+
+    fontWeight: "600",
+
+    color: "#cbd5e1",
+
+    marginBottom: "7px"
+  });
+   const textArea =
+    document.createElement("textarea");
+
+  textArea.value =
+    extractedText ||
+    "No text detected.";
+    Object.assign(textArea.style, {
+    width: "100%",
+
+    minHeight: "150px",
+
+    maxHeight: "300px",
+
+    padding: "12px",
+
+    background:
+      "rgba(2, 6, 23, 0.72)",
+
+    color: "#e2e8f0",
+
+    border:
+      "1px solid rgba(148,163,184,0.20)",
+
+    borderRadius: "9px",
+
+    outline: "none",
+
+    resize: "vertical",
+
+    fontFamily:
+      "JetBrains Mono, Consolas, monospace",
+
+    fontSize: "13px",
+
+    lineHeight: "1.6",
+
+    boxSizing: "border-box"
+  });
+// When textarea gets focus
+  textArea.addEventListener(
+    "focus",
+    () => {
+
+      textArea.style.border =
+        "1px solid #7c3aed";
+
+    }
+  );
+  textArea.addEventListener(
+    "blur",
+    () => {
+
+      textArea.style.border =
+        "1px solid rgba(148,163,184,0.20)";
+
+    }
+  );
+  copyButton.onclick=async ()=>{
+    try {
+
+        await navigator.clipboard.writeText(
+          textArea.value
+        );
+        copyButton.textContent="Copied ✓";
+        setTimeout(()=>{
+          copyButton.textContent="Copy"
+        },1400)
+  }catch(error){
+    console.error(
+          "Copy failed:",
+          error
+        );
   }
+
+
+  }
+  closeBtn.onclick=()=>{
+    panel.remove()
+  }
+  panel.append(
+    header,imageContainer,textLabel,textArea
+  );
+  document.documentElement.appendChild(panel);
+
+}
 
   // Applies reusable CSS styles to buttons inside the preview panel.
   function styleButton(button) {
