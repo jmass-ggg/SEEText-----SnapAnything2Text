@@ -157,9 +157,11 @@
       if (!uploaded?.success) {
         throw new Error(uploaded?.error || "Upload failed");
       }
-      const extractedText=uploaded.result.text;
+      const extractedText=uploaded.result.result;
+      
       showPreview(croppedImage,extractedText);
       console.log("Backend result", uploaded.result);
+      console.log("result is ",extractedText)
     } catch (error) {
       console.log("Capture failed", error);
     }
